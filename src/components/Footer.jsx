@@ -75,7 +75,7 @@ const Footer = () => {
               </a>
             ))}
           </div>
-
+          {/* star button */}
           {showGitHubStar && (
             <a
               href="https://github.com/SCR01/scr-game"
