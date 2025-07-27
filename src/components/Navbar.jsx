@@ -84,6 +84,12 @@ const Navbar = () => {
                   {item}
                 </a>
               ))}
+              <a
+                href="#cart"
+                className="nav-hover-btn"
+              >
+                Cart
+              </a>
             </div>
             <button
               className="ml-10 flex items-center space-x-0.5"
