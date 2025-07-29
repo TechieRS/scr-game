@@ -14,16 +14,28 @@ export const GameProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (SAFE VERSION)
   useEffect(() => {
-    const savedCart = localStorage.getItem('gameCart');
-    const savedWishlist = localStorage.getItem('gameWishlist');
-    
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+    // Safely load cart items
+    try {
+      const savedCart = localStorage.getItem('gameCart');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error("Failed to parse cart from localStorage:", error);
+      localStorage.removeItem('gameCart'); // Clear the corrupted item
     }
-    if (savedWishlist) {
-      setWishlistItems(JSON.parse(savedWishlist));
+
+    // Safely load wishlist items
+    try {
+      const savedWishlist = localStorage.getItem('gameWishlist');
+      if (savedWishlist) {
+        setWishlistItems(JSON.parse(savedWishlist));
+      }
+    } catch (error) {
+      console.error("Failed to parse wishlist from localStorage:", error);
+      localStorage.removeItem('gameWishlist'); // Clear the corrupted item
     }
   }, []);
 
