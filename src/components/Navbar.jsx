@@ -5,8 +5,14 @@ import { TiLocationArrow } from "react-icons/ti";
 import { useWindowScroll } from "react-use";
 import gsap from "gsap";
 
-// Navigation items
-const navItems = ["Nexus", "Vault", "Prologue", "About", "Contact"];
+// Navigation items - updated with correct section IDs
+const navItems = [
+  { name: "Nexus", href: "#about" },
+  { name: "Vault", href: "#features" },
+  { name: "Prologue", href: "#story" },
+  { name: "About", href: "#about" },
+  { name: "Contact", href: "#contact" },
+];
 
 const Navbar = () => {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -76,18 +82,14 @@ const Navbar = () => {
           <div className="flex h-full items-center">
             <div className="hidden md:flex items-center space-x-6">
               {navItems.map((item, index) => (
-                <a
-                  key={index}
-                  href={`#${item.toLowerCase()}`}
-                  className="nav-hover-btn"
-                >
-                  {item}
+                <a key={index} href={item.href} className="nav-hover-btn">
+                  {item.name}
                 </a>
               ))}
-              <a
-                href="#cart"
-                className="nav-hover-btn"
-              >
+              <a href="#games-gallery" className="nav-hover-btn">
+                Games
+              </a>
+              <a href="#cart-wishlist" className="nav-hover-btn">
                 Cart
               </a>
             </div>

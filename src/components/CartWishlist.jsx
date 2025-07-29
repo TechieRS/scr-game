@@ -296,7 +296,10 @@ const CartWishlist = () => {
   const scrollToGamesGallery = () => {
     const gamesSection = document.getElementById('games-gallery');
     if (gamesSection) {
-      gamesSection.scrollIntoView({ behavior: 'smooth' });
+      gamesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
     }
   };
 
@@ -335,27 +338,36 @@ const CartWishlist = () => {
       <div className="container mx-auto px-5 md:px-10">
         {/* Header with Navigation */}
         <div className="cart-wishlist-title mb-16">
-          <div className="flex items-center justify-center gap-8 mb-8">
-            <button
-              onClick={() => setActiveTab('cart')}
-              className={`font-nippo-light text-lg uppercase md:text-[25px] px-4 py-2 rounded-lg transition-all duration-300 ${
-                activeTab === 'cart' 
-                  ? 'text-black bg-white shadow-lg' 
-                  : 'text-black/70 hover:text-black hover:bg-white/20'
-              }`}
-            >
-              CART ({cartItems.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('wishlist')}
-              className={`font-nippo-light text-lg uppercase md:text-[25px] px-4 py-2 rounded-lg transition-all duration-300 ${
-                activeTab === 'wishlist' 
-                  ? 'text-black bg-white shadow-lg' 
-                  : 'text-black/70 hover:text-black hover:bg-white/20'
-              }`}
-            >
-              WISHLIST ({wishlistItems.length})
-            </button>
+          <div className="flex items-center justify-center mb-8">
+            <div className="relative flex bg-white/10 backdrop-blur-sm rounded-full p-1 border border-black/20">
+              {/* Sliding background indicator */}
+              <div 
+                className={`absolute top-1 bottom-1 bg-black rounded-full shadow-lg transition-all duration-300 ease-out ${
+                  activeTab === 'cart' ? 'left-1 right-1/2' : 'left-1/2 right-1'
+                }`}
+              />
+              
+              <button
+                onClick={() => setActiveTab('cart')}
+                className={`relative px-6 py-3 rounded-full font-nippo-light text-sm uppercase font-bold transition-all duration-300 z-10 ${
+                  activeTab === 'cart' 
+                    ? 'text-white' 
+                    : 'text-black hover:text-black/80'
+                }`}
+              >
+                CART ({cartItems.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('wishlist')}
+                className={`relative px-6 py-3 rounded-full font-nippo-light text-sm uppercase font-bold transition-all duration-300 z-10 ${
+                  activeTab === 'wishlist' 
+                    ? 'text-white' 
+                    : 'text-black hover:text-black/80'
+                }`}
+              >
+                WISHLIST ({wishlistItems.length})
+              </button>
+            </div>
           </div>
           
           <AnimatedTitle
@@ -376,12 +388,13 @@ const CartWishlist = () => {
                 <p className="font-nippo-light text-gray-400 mb-8">
                   Browse our games collection and add some awesome titles to your cart!
                 </p>
-                <Button
-                  title="Browse Games"
-                  rightIcon={<TiLocationArrow />}
-                  containerClass="bg-yellow-300 flex-center gap-1"
+                <button
                   onClick={scrollToGamesGallery}
-                />
+                  className="bg-yellow-300 hover:bg-yellow-400 text-black px-6 py-3 rounded-full font-bold uppercase transition-all duration-300 flex items-center gap-2"
+                >
+                  <TiLocationArrow />
+                  Browse Games
+                </button>
               </BentoTilt>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -411,12 +424,13 @@ const CartWishlist = () => {
                 <p className="font-nippo-light text-gray-400 mb-8">
                   Browse our games collection and add some titles you'd like to play later!
                 </p>
-                <Button
-                  title="Browse Games"
-                  rightIcon={<TiLocationArrow />}
-                  containerClass="bg-yellow-300 flex-center gap-1"
+                <button
                   onClick={scrollToGamesGallery}
-                />
+                  className="bg-yellow-300 hover:bg-yellow-400 text-black px-6 py-3 rounded-full font-bold uppercase transition-all duration-300 flex items-center gap-2"
+                >
+                  <TiLocationArrow />
+                  Browse Games
+                </button>
               </BentoTilt>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
