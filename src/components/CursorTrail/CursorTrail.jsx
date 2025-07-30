@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import './CursorTrail.css';
 
 const CursorTrail = () => {
-  const cursorRef = useRef(null);
+  // We no longer need a ref for the main container
   const circlesRef = useRef([]);
-  const coordsRef = useRef({ x: 0, y: 0 });
+  // We'll store the positions of each circle in an array
+  const positions = useRef(Array(12).fill({ x: 0, y: 0 }));
+  const mousePos = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef(null);
 
   const numCircles = 12;
@@ -12,38 +14,45 @@ const CursorTrail = () => {
   useEffect(() => {
     const circles = circlesRef.current;
 
-    // Initialize all circle positions
-    circles.forEach(circle => {
-      circle.x = 0;
-      circle.y = 0;
-      circle.style.backgroundColor = 'white'; // KEEP THIS as requested
-    });
-
+    // Track the mouse position
     const handleMouseMove = (e) => {
-      coordsRef.current.x = e.clientX;
-      coordsRef.current.y = e.clientY;
+      mousePos.current.x = e.clientX;
+      mousePos.current.y = e.clientY;
     };
 
     const animate = () => {
-      let x = coordsRef.current.x;
-      let y = coordsRef.current.y;
+      // The leader circle (index 0) will chase the mouse
+      let leaderX = positions.current[0].x;
+      let leaderY = positions.current[0].y;
 
+      // Use a smoothing factor (linear interpolation or "lerp")
+      leaderX += (mousePos.current.x - leaderX) * 0.25;
+      leaderY += (mousePos.current.y - leaderY) * 0.25;
+
+      positions.current[0] = { x: leaderX, y: leaderY };
+
+      // Each subsequent circle chases the one in front of it
+      for (let i = 1; i < numCircles; i++) {
+        let currentX = positions.current[i].x;
+        let currentY = positions.current[i].y;
+        
+        const followX = positions.current[i - 1].x;
+        const followY = positions.current[i - 1].y;
+
+        currentX += (followX - currentX) * 0.25;
+        currentY += (followY - currentY) * 0.25;
+        
+        positions.current[i] = { x: currentX, y: currentY };
+      }
+
+      // Apply the new positions using hardware-accelerated transforms
       circles.forEach((circle, index) => {
-        // Offset to center the circle around the cursor
-        const circleOffset = 12;
-
-        // Interpolation towards the previous position
-        const nextCircle = circles[index + 1] || circles[0];
-        x += (nextCircle.x - x) * 0.26;
-        y += (nextCircle.y - y) * 0.26;
-
-        circle.style.left = `${x - circleOffset}px`;
-        circle.style.top = `${y - circleOffset}px`;
-        circle.style.transform = `scale(${(numCircles - index) / numCircles})`;
-
-        // Update stored position
-        circle.x = x;
-        circle.y = y;
+        if (circle) {
+          const { x, y } = positions.current[index];
+          const scale = (numCircles - index) / numCircles;
+          // Use transform for both position and scale for maximum performance
+          circle.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        }
       });
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -54,20 +63,24 @@ const CursorTrail = () => {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, []);
 
-  // Render circles
+  // Render circles. We add a default background color here.
   const circleElements = Array.from({ length: numCircles }, (_, index) => (
     <div
       key={index}
       className="circle"
       ref={(el) => (circlesRef.current[index] = el)}
+      style={{ backgroundColor: 'white' }} // Keep the requested style
     ></div>
   ));
 
-  return <div className="cursor" ref={cursorRef}>{circleElements}</div>;
+  // The main container no longer needs a ref
+  return <div className="cursor">{circleElements}</div>;
 };
 
 export default CursorTrail;
