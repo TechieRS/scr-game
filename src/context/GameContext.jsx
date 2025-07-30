@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 const GameContext = createContext();
 
@@ -51,7 +52,7 @@ export const GameProvider = ({ children }) => {
   const addToCart = (game) => {
     const existingItem = cartItems.find(item => item.id === game.id);
     if (existingItem) {
-      alert(`${game.title} is already in your cart!`);
+      toast.error(`${game.title} is already in your cart!`);
       return;
     }
     
@@ -65,7 +66,7 @@ export const GameProvider = ({ children }) => {
       rewards: game.rating >= 4.8 ? "Earn a boosted 20% back in Epic Rewards!" : null
     }]);
     
-    alert(`${game.title} added to cart!`);
+    toast.success(`${game.title} added to cart!`);
   };
 
   const removeFromCart = (gameId) => {
@@ -75,12 +76,12 @@ export const GameProvider = ({ children }) => {
   const addToWishlist = (game) => {
     const existingItem = wishlistItems.find(item => item.id === game.id);
     if (existingItem) {
-      alert(`${game.title} is already in your wishlist!`);
+      toast.error(`${game.title} is already in your wishlist!`);
       return;
     }
     
     setWishlistItems(prev => [...prev, game]);
-    alert(`${game.title} added to wishlist!`);
+    toast.success(`${game.title} added to wishlist!`);
   };
 
   const removeFromWishlist = (gameId) => {

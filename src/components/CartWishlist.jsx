@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import { useGSAP } from "@gsap/react";
 import { TiLocationArrow, TiTrash, TiHeart, TiShoppingCart } from "react-icons/ti";
+import { toast } from 'sonner';
 import AnimatedTitle from "./AnimatedTitle";
 import Button from "./Button";
 import { BentoTilt } from "./Features";
@@ -290,7 +291,7 @@ const CartWishlist = () => {
 
   const handleCheckout = () => {
     console.log("Proceeding to checkout with items:", cartItems);
-    alert("Proceeding to checkout...");
+    toast.success("Proceeding to checkout...");
   };
 
   const scrollToGamesGallery = () => {
