@@ -43,13 +43,16 @@ export const GameProvider = ({ children }) => {
   }, [wishlistItems]);
 
   const addToCart = (game) => {
-    const existingItem = cartItems.find(item => item.id === game.id);
-    if (existingItem) {
-      toast.error(`${game.title} is already in your cart!`);
+    if (!game || !game.id) return;
+
+    const alreadyInCart = cartItems.some((item) => item.id === game.id);
+
+    if (alreadyInCart) {
+      toast.warning(`${game.title} is already in the cart.`);
       return;
     }
 
-    setCartItems(prev => [
+    setCartItems((prev) => [
       ...prev,
       {
         ...game,
@@ -60,7 +63,7 @@ export const GameProvider = ({ children }) => {
           ? Math.round(((game.originalPrice - game.price) / game.originalPrice) * 100)
           : 0,
         selfRefundable: true,
-        rewards: game.rating >= 4.8 ? "Earn a boosted 20% back in Epic Rewards!" : null,
+        rewards: game.rating >= 4.8 ? 'Earn a boosted 20% back in Epic Rewards!' : null,
       },
     ]);
 
