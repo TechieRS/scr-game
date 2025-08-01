@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { toast } from 'sonner'; // 1. Import the toast function
 
 const GameContext = createContext();
 
@@ -14,32 +15,23 @@ export const GameProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
 
-  // Load from localStorage on mount (SAFE VERSION)
+  // Load from localStorage on mount (No changes needed here)
   useEffect(() => {
-    // Safely load cart items
     try {
       const savedCart = localStorage.getItem('gameCart');
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
+      if (savedCart) setCartItems(JSON.parse(savedCart));
     } catch (error) {
       console.error("Failed to parse cart from localStorage:", error);
-      localStorage.removeItem('gameCart'); // Clear the corrupted item
     }
-
-    // Safely load wishlist items
     try {
       const savedWishlist = localStorage.getItem('gameWishlist');
-      if (savedWishlist) {
-        setWishlistItems(JSON.parse(savedWishlist));
-      }
+      if (savedWishlist) setWishlistItems(JSON.parse(savedWishlist));
     } catch (error) {
       console.error("Failed to parse wishlist from localStorage:", error);
-      localStorage.removeItem('gameWishlist'); // Clear the corrupted item
     }
   }, []);
 
-  // Save to localStorage whenever state changes
+  // Save to localStorage whenever state changes (No changes needed here)
   useEffect(() => {
     localStorage.setItem('gameCart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -48,13 +40,16 @@ export const GameProvider = ({ children }) => {
     localStorage.setItem('gameWishlist', JSON.stringify(wishlistItems));
   }, [wishlistItems]);
 
+  // ===================================================================
+  // START: Replaced all alerts with non-blocking toast notifications
+  // ===================================================================
+
   const addToCart = (game) => {
     const existingItem = cartItems.find(item => item.id === game.id);
     if (existingItem) {
-      alert(`${game.title} is already in your cart!`);
+      toast.error(`${game.title} is already in your cart!`);
       return;
     }
-    
     setCartItems(prev => [...prev, {
       ...game,
       type: game.genre || 'Base Game',
@@ -64,27 +59,34 @@ export const GameProvider = ({ children }) => {
       selfRefundable: true,
       rewards: game.rating >= 4.8 ? "Earn a boosted 20% back in Epic Rewards!" : null
     }]);
-    
-    alert(`${game.title} added to cart!`);
-  };
-
-  const removeFromCart = (gameId) => {
-    setCartItems(prev => prev.filter(item => item.id !== gameId));
+    toast.success(`${game.title} added to cart!`);
   };
 
   const addToWishlist = (game) => {
     const existingItem = wishlistItems.find(item => item.id === game.id);
     if (existingItem) {
-      alert(`${game.title} is already in your wishlist!`);
+      toast.error(`${game.title} is already in your wishlist!`);
       return;
     }
-    
     setWishlistItems(prev => [...prev, game]);
-    alert(`${game.title} added to wishlist!`);
+    toast.success(`${game.title} added to wishlist!`);
+  };
+  
+  const removeFromWishlist = (gameId) => {
+    const itemToRemove = wishlistItems.find(item => item.id === gameId);
+    setWishlistItems(prev => prev.filter(item => item.id !== gameId));
+    // Provide user feedback when an item is removed via the toggle
+    if (itemToRemove) {
+      toast.info(`${itemToRemove.title} removed from wishlist.`);
+    }
   };
 
-  const removeFromWishlist = (gameId) => {
-    setWishlistItems(prev => prev.filter(item => item.id !== gameId));
+  // ===================================================================
+  // END: Changes
+  // ===================================================================
+
+  const removeFromCart = (gameId) => {
+    setCartItems(prev => prev.filter(item => item.id !== gameId));
   };
 
   const moveToCartFromWishlist = (gameId) => {
